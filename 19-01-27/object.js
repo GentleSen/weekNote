@@ -56,7 +56,10 @@ father_3.sayName == father_4.sayName;   // true
 // 1. isprototypeOf() : 用来判断某个 prototype 对象和某个实例之间的关系
 Father.prototype.isPrototypeOf(father_3);
 
+father_4.sayHello = function() {
+    console.log(`hello`);
+}
 // 2. 每一个实例都有 hasOwnProperty 来判断属性是实例自身的还是继承自prototype的
 for(let key in father_4){
-    console.log(father_4.hasOwnProperty(key));
+    console.log(father_4.hasOwnProperty(key), key);
 }
