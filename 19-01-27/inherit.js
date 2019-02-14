@@ -79,7 +79,7 @@ var Husky = function(name) {
 }
 var TempFun = function(){};
 TempFun.prototype = Dog.prototype;
-Husky.prototype = new TempFun(); 
+Husky.prototype = new TempFun();
 Husky.prototype.constructor = Husky;
 Husky.prototype.sayName = function() {
     console.log(this.name);
@@ -104,3 +104,24 @@ for(let key in dog){
 Husky.prototype.sayName = function() {
     console.log(this.name);
 }
+
+// 继承
+var Father = function(name) {
+    this.type = `person`;
+    this.name = name;
+}
+Father.prototype.sayInfo = function() {
+    console.log(`name: ${this.name}, type: ${this.type}`);
+}
+var Son = function(name) {
+    Father.call(this, name);
+    this.fatherName = `fatherName`;
+}
+var TempObj = function(){};
+TempObj.prototype = Father.prototype;
+Son.prototype = new TempObj();
+Son.prototype.constructor = Father;
+Son.prototype.sayHello = function() {
+    console.log(`hello`);
+}
+var son = new Son('son');
