@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <p>放在constructor中的属性以及方法，在创建实例的时候重新赋值，即每个实例constructor中的属性和方法都是独立的</p>
+    <p>放在constructor外的属性以及方法，在创建实例的时候会继承，即所有的实例共享constructor外的属性以及方法</p>
+
+    <p>class 的数据类型就是function，类本身就指向构造函数</p>
+    <p>B类 继承 A 类，则必须在B类的constructor中执行super()，否则创建B类实例的时候会报错。因为 B 类的this对象必须先得到A类的属性和方法，然后加上 B 类的属性和方法。如果不执行super()，B 就得不到 A 的this对象</p>
+    <p>如果子类没有定义constructor方法，则该方法会被默认添加，任何一个子类都有constructor方法。</p>
+    <p>在constructor中，只有在使用过super方法之后才能使用this关键字</p>
+    <p>Object.getPrptotypeOf(classB) === classA; 可以用来判断一个类是否继承了另外一个类</p>
+
+    <p>super可以作为函数使用也可以作为对象使用，作为函数调用时，只能用在子类的constructor方法中，表示调用父类的构造函数。</p>
+    <p>super作为对象使用时，在普通方法中指向父类的原型对象，可以调用父类原型上的属性和方法，无法调用父类实例上的方法。且在普通方法中调用父类原型上的方法时，方法内部的this指向当前子类的实例。</p>
+    <p>super作为对象使用时，在静态方法中指向父类本身。且在静态方法中调用父类的方法时，方法内部的this指向的是当前的子类而不是子类的实例。</p>
+    <p>在使用super的时候，必须要显示的声明是作为函数使用还是作为对象使用，否则会报错</p>
+</body>
+</html>
+<script>
+    class Animal {
+        constructor(type) {
+            this.type = type;
+            this.nick = 'Animal';
+        }
+        eat(food) {
+            console.log(`${this.type} Are Eat ${food}`);
+        }
+        bark() {
+            console.log(`Animal Are Bark`);
+        }
+    }
+    class Dog extends Animal {
+        constructor(name) {
+            super('Dog'); // super 作为函数使用，代表Animal的构造函数，但是返回的是Dog的实例，即super内部的tis指向的是B的实例。
+            this.name = name;
+            this.bark = () => {
+                console.log(`${this.type} are Bark wawawa`);
+            };
+        }
+    }
+    class Cat extends Animal {
+        constructor(name) {
+            super('Cat');
+            this.name = name;
+        }
+        bark(){
+            console.log(`${this.type} are Bark mimimi`);
+        };
+    }
+    const xiaoHei = new Dog('xiaoHei');
+    const xiaoHong = new Dog('xiaoHong');
+    console.log(xiaoHei.bark === xiaoHong.bark);     // false
+    const mimi = new Cat('mimi');
+    const xiaoZhuang = new Cat('xiaoZhuang');
+    console.log(mimi.bark === xiaoZhuang.bark);      // true
+
+
+
+    console.log('=================================================================================');
+    class Car {
+        run() {
+            console.log(`Car Are Running`);
+        }
+    }
+    class Audi extends Car{
+        constructor() {
+            super();   // super 如果省略会报错
+            this.type = 'Audi';
+        }
+        pressHorn() {
+            console.log(`dididi~`);
+        }
+    }
+    var audi = new Audi();
+    console.log(audi);
+    console.log(Object.getPrototypeOf(Audi) === Car);
+
+
+    console.log('================================ES5 构造函数================================================');
+    var Father = function() {
+        this.fatherName = 'fatherName';
+        this.fatherHandle = function() {
+            console.log(fatherHandle);
+        }
+    }    
+    Father.prototype.fatherPrototypeHandle = function () {
+        console.log('fatherPrototypeHandle');
+    }
+    var Son = function() {
+        Father.call(this);
+        this.sonName = 'sonName';
+        this.sonHandle = function() {
+            console.log('sonHandle');
+        }
+    }
+    var TempFun = function(){};
+    TempFun.prototype = Father.prototype;
+    Son.prototype = new TempFun();
+    Son.prototype.constructor = Son;
+    Son.prototype.sonPrototypeHandle = function() {
+        console.log(`sonPrototypeHandle`);
+    }
+    var son = new Son();
+    console.log(son);
+
+
+    console.log('==================================ES6 class=============================================');
+    class A {
+        constructor() {
+            this.Aname = 'AName';
+            this.fatherHandle = function() {
+                console.log(fatherHandle);
+            }
+        }
+        fatherPrototypeHandle() {
+            console.log('fatherPrototypeHandle');
+        }
+    }
+    class B extends A {
+        constructor() {
+            super();
+            this.sonName = 'sonName';
+            this.sonHandle = function() {
+                console.log('sonHandle');
+            }
+        }
+        sonPrototypeHandle() {
+            console.log(`sonPrototypeHandle`);
+        }
+    }
+    const b = new B();
+    console.log(b);
+
+
+
+
+    console.log('===================================super 普通方法=====================================================');
+    class C {
+        constructor() {
+            this.cName = 'cName';
+            this.cHandle = function() {
+                console.log('cHandle');
+            }
+        }
+        cPrototypeHandle() {
+            console.log('cPrototypeHandle');
+        }
+    }
+    console.log(C);
+    class D extends C {
+        constructor() {
+            super();
+            super.cId = 'cId';
+            this.dName = 'dName';
+            this.dHandle = function() {
+                console.log('dHandle');
+            }
+        }
+        dPrototypeHandle() {
+            super.cNickName = function() {
+                console.log('super.cNickName');
+            };
+            console.log('dPrototypeHandle');
+        }
+    }
+    const d = new D();
+    d.dPrototypeHandle();
+    console.log(d);
+    const c = new C();
+    console.log(c);
+
+
+    console.log('====================================================================super  静态方法==============================================');
+    class E {
+        static sayName = function() {
+            console.log('E');
+        }
+    }
+    class F extends E {
+        static sayName() {
+            console.log('F');
+        }
+        static saySuperName() {
+            super.sayName();
+        }
+    }
+    E.sayName();     // E
+    F.sayName();     // F
+    F.saySuperName();// E
+</script>

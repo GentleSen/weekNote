@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>单例模式</title>
+</head>
+<body>
+    <p>
+        需要构造函数缓存实例this,以便当第二次调用该构造函数时能够创建并返回同一个对象
+    </p> 
+    <p>
+        实现思路 1. 使用全局变量来存储实例。但是并不推荐，容易造成变量污染。
+                2. 在构造函数的静态属性中缓存该实例,可以通过修改该静态属性的属性描述符来让他不可修改。
+                3. 可以讲该实例封装到闭包中，代价是带来了额外的闭包开销。
+    </p>
+</body>
+</html>
+<script>
+    (function(title){
+        console.log(title);
+        var Word = function(name) {
+            if(typeof Word.instance === 'object') {
+                return Word.instance
+            };
+            this.name = name;
+            Object.defineProperty(Word, 'instance', {
+                value: this,
+            });
+            return this;
+        }
+        var word1 = new Word('word1');
+        Word.instance = null;
+        var word2 = new Word('word2');
+        console.log(word1 === word2);
+        console.log(word1);
+        console.log(word2);
+    })('ES5 实现单例模式（将实例存储在构造函数的静态属性中）');
+
+
+    (function(title){
+        console.log(title);
+        var Word;
+        (function(){
+            var instance;
+            Word = function(name) {
+                if(instance){
+                    return instance;
+                }
+                instance = this;
+                this.name = name;
+            }
+        })();
+        var word1 = new Word('word1');
+        var word2 = new Word('word2');
+        console.log(word1 === word2);
+        console.log(word1);
+        console.log(word2);
+    })('ES5 实现单例模式（将该实例封装到闭包中）');
+    
+    
+    (function(title) {
+        console.log(title);
+        class Word {
+            constructor(name, info) {
+                this.name = name;
+                this.info = info;
+            }
+            static getInstance(name, info) {
+                if (!this.instance) {
+                    this.instance = new Word(name, info);
+                }
+                return this.instance;
+            }
+        }
+        const word1 = Word.getInstance('word1', 'word');
+        const word2 = Word.getInstance('word2', 'word');
+        console.log(word1 === word2);
+        console.log(word1);
+        console.log(word2);
+    })('ES6 实现单例模式');
+</script>

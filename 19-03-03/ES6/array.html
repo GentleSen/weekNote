@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <p>
+        1. 扩展运算符 ..., 用于讲一个数组转换为一个参数序列。扩展运算符如果放在括号中，js就会认为是函数调用。如果这时不是函数调用就会报错。
+        2. Array.from(); 用于讲伪数组和可遍历的对象转换为数组,json对象只要有length属性就能被转换为Array
+        3. Array.of(); 用于讲一组值转换为数组.    1,2,3,4,5 => [1,2,3,4,5]
+        4. [1,2,3,4,5].copyWithin(target, start=0, end=arr.length); 将数组arr[target-1]到arr[target+end-start-2]处的值替换为arr[start]到arr[end-1]处的值
+        5. [].find(); [].findIndex();
+           [].find(fun(item, this)), 返回fun函数第一次return true时候的item;
+           [].findIndex(fun(item, this)),返回fun函数第一次return true时候的index，如果没有返回-1，可以识别出NaN。
+        6. [empty, 2, empty, 4].fill(item, start, end); 使用item填充该数组的arr[index]到arr[end]。 =>   [item,item,item,item], 可用于初始化数组
+           如果填充的类型为对象，那么被赋值的是同一个内存地址的对象，而不是深拷贝对象。
+        7. [1,2,3].entries() 返回一个遍历器对象，是对键值对进行遍历，for( let [key, value] of arr )
+           [1,2,3].keys() 返回一个遍历器对象，是对键值进行遍历， for(let key of arr)
+           [1,2,3].values() 返回一个遍历器对象，是对value进行遍历， for(let value of arr)
+        8. [1,2,3,4].includes(2);如果数组中有给定的值返回true，如果没有返回false。 可以识别NaN，2 ！== '2', 可以识别四个字节存储的字符
+        9. [1,2,[1,2]].flat(index); 数组扁平化，返回一个新数组，不影响原数组，index表示扁平化的层级，默认为1，扁平化时会跳过数组的空位。
+           [1,2,[1,2]].flatMap((item, index, arr)=> {return item * 2}); 先对数组的每一项执行map方法，然后再对函数的返回值执行flat。只能展开一层数组。
+    </p>
+</body>
+</html>
+<script>
+    {
+        console.log(...[1,2,3,4,5]); // 1 2 3 4 5
+        const arr = [1,2,3];
+        arr.push(...[4,5,6,7,8,9,0]); // [1,2,3,4,5,6,7,8,9,0]
+        console.log(arr);
+        // 等于
+        arr.push(4,5,6,7,8,9,0);
+        const arr_1 = [1, 
+        ...(true ? [2] : [4]),
+        3];
+        console.log(arr_1); // [1,2,3]
+        // (...[1,2,3,4,5])    throw Err
+        var arr_2 = [1,2,3];
+        var arr_copy = [...arr_2];
+        arr_2[0] = 5;
+        console.log(arr_copy[0]); // 1, 使用...  来对单层数组进行拷贝
+        var str = '𠮷a';
+        console.log([...str].length) // 2 , 可以识别四个字节存储的字符
+        const obj = {
+            name: 'SenSir',
+            id: '123',
+        };
+        // console.log([...obj]);  throw Err: obj is not iterable
+    }
+
+    {
+        const obj = {
+            name: 'SenSir',
+            id: '123',
+        };
+        console.log(Array.from(obj)); // []
+        const obj_1 = {
+            '0': 'sen',
+            '2': 'Sir',
+            '1': '灬',
+        }
+        console.log(Array.from(obj_1)); // []
+        const obj_2 = {
+            '0': 'sen',
+            '2': 'Sir',
+            '1': '灬',
+            length: 3
+        }
+        console.log(Array.from(obj_2)); // [Sen灬Sir]
+        console.log(Array.from('SenSir')); // ["S", "e", "n", "S", "i", "r"]
+        console.log(Array.from(new Set(['a', 'b', 'c'])));
+        console.log(Array.from(new Map([
+            ['name', 'SenSir'],
+            ['id', '123456'],
+        ]))); // [['name', 'SenSir'], ['id', '123456']]
+
+        console.log(Array.from([1,2,3,4,5,6,7,8,9,0], (item, index) => {
+            return item > 2;
+        })); // [false, false, true, true, true, true, true, true, true, false]
+        console.log([1,2,3,4,5,6,7,8,9,0].map((item, index)=> {
+            return item > 2;
+        })); // [false, false, true, true, true, true, true, true, true, false]
+        console.log([1,2,3,4,5,6,7,8,9,0].filter((item, index)=> {
+            return item > 2;
+        })); // [3, 4, 5, 6, 7, 8, 9]
+
+        // 创建一个长度为5，每一项内容为'SenSir'的数组
+        console.log(Array.from({length: 5}, ()=> {
+            return 'SenSir';
+        })); // ["SenSir", "SenSir", "SenSir", "SenSir", "SenSir"]
+        const arr = new Array(5);
+        arr.fill('SenSir');
+        console.log(arr); // ["SenSir", "SenSir", "SenSir", "SenSir", "SenSir"]
+
+        // 字符串的长度
+        const str = 'a𠮷bc';
+        console.log(str.length); // 5
+        console.log(Array.from(str).length); // 4
+        console.log([...str].length); // 4
+        let i = 0;
+        for(let k of str) {
+            i++;
+        }
+        console.log(i); // 4
+    }
+
+    {
+        console.log(new Array()); // []
+        console.log(new Array(3)); // [empty, empty, empty]
+        console.log(new Array(1,2,3,4,5)); // [1,2,3,4,5]
+        console.log(Array.of()); // []
+        console.log(Array.of(3)); // [3]
+        console.log(Array.of(1,2,3,4,5)); // [1,2,3,4,5]
+    }
+
+    {
+        console.log([0,1,2,3,4,5,6,7,8,9].copyWithin(5, 0, 5)); // [0,1,2,3,4,0,1,2,3,4]
+    }
+
+    {
+        console.log([NaN].indexOf(NaN)); // -1
+        const _this = {
+            id: 7,
+        };
+        console.log([1,2,3,4,5,6,7,8,9,0].find((item, index, arr)=> {
+            return item > _this.id;
+        }, _this)); // 8       注意this传入的位置。
+        console.log([1,2,3,4,5,6,7,8,9].findIndex((item, index, arr) => {
+            return item > 6;
+        })); // 6    返回的为下标
+        console.log([1].find((item, index)=> {
+            return item > 10;
+        })); // undefined
+        console.log([1].findIndex((item, index)=> {
+            return item > 10;
+        })); // -1
+        [].find((item, index)=> {
+            console.log(item); // 不会console
+        });
+    }
+
+    {
+        console.log([,,,,,].fill('SenSir')); // ["SenSir", "SenSir", "SenSir", "SenSir", "SenSir"]
+        console.log([1,2,3,4,5].fill('SenSir')); // ["SenSir", "SenSir", "SenSir", "SenSir", "SenSir"]
+        console.log([1,2,3,4,5].fill('SenSir', 2, 4));// [1, 2, "SenSir", "SenSir", 5] // 包括第二个参数不包括第三个参数
+    }
+
+    {
+        const arr = [1,2,3,4,5];
+        for (let [ index, item ] of arr.entries()) {
+            console.log(item, index, 'item index');
+        }
+        for (let index of arr.keys()) {
+            console.log(index, 'index');
+        }
+        for (let item of arr.values()) {
+            console.log(item, 'item');
+        }
+    }
+
+    {
+        const arr = [1, '2', '𠮷', NaN];
+        console.log(arr.includes(1)); // true
+        console.log(arr.includes(2)); // false
+        console.log(arr.includes('2')); // true
+        console.log(arr.includes('𠮷')); // true
+        console.log(arr.includes(NaN)); // true
+    }
+
+    {
+        var arr = [1,2,3,4,5,[1,2,3],[1,2,3,[4,5,6]]];
+        var arrFlat_1 = arr.flat(1);
+        console.log(arr); // [1,2,3,4,5,[1,2,3],[1,2,3,[4,5,6]]]; 原数组没变
+        console.log(arrFlat_1); // [1,2,3,4,5,1,2,3,1,2,3,[4,5,6]]； 只展开了一层
+        var arrFlat_2 = arr.flat(2);
+        console.log(arrFlat_2); // [1, 2, 3, 4, 5, 1, 2, 3, 1, 2, 3, 4, 5, 6]
+        var arr_1 = [1,2,3,4,5,6];
+        var arr_2 = arr_1.flatMap((item)=> {
+            return [item * item];
+        });
+        console.log(arr_2); //  [1, 4, 9, 16, 25, 36]
+    }
+
+    {
+        console.log([1,2,3].concat([4,5,6])); // [1, 2, 3, 4, 5, 6]
+        console.log([1,2,3].join('灬')); // 1灬2灬3
+        console.log([1,2,3].pop()); // 3
+        console.log([1,2,3].push('灬')); // 4, push 返回的是push之后数组的长度
+        console.log([1,2,3].reverse()); // [3, 2, 1]
+        console.log([1,2,3].shift()); // 1
+        console.log([1,2,3].unshift(0)); // 数组头部插入数据，返回数组长度
+        console.log([1,2,3].slice(1, 3)); // [2, 3]
+        console.log([1,2,3].sort(function(a, b) {
+            return a > b;
+        })); //[1, 2, 3]
+        const arr = [1,2,3];
+        console.log(arr.splice(0, 2, 3, 3)); // [1, 2] 返回被截取的字段...
+        console.log(arr); // [3, 3, 3]
+    }
+</script>
