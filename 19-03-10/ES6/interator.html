@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>interator</title>
+</head>
+<body>
+    <p>遍历器Interator是一种接口，为各种不同的数据结构提供统一的访问机制</p>
+    <p>Interator的作用有三个：
+        1. 是一种接口，为各种不同的数据结构提供统一的访问机制。
+        2. 使得数据结构的成员能够按照某种次序排列。
+        3. Interator主要为for...of... 服务。
+    </p>
+    <p>Interator遍历过程：
+        1. 创建一个指针对象，指向当前数据结构的起始位置。（遍历器对象本质是一个指针对象）
+        2. 执行一次next()，指针就往后移动一位，直至指针到当前数据的结尾位置。
+    </p>
+    <p>
+        遍历器和它所遍历的那个数据结构是分开的，遍历器可以独立存在。
+    </p>
+    <p>
+        默认具有遍历器的数据结构有： Array,Map,Set,String,TypedArray,arguments,NodeList。默认的遍历器对象存储在Symbol.iterator属性中
+    </p>
+    <p>
+        JSON对象没有部署Iterator,主要是因为对象的key是无序的，无法确定遍历的先后顺序。而遍历器是一种有序处理。
+        对于任何无序的数据结构部署遍历接口，都相当于进行了一次线性转换。
+    </p>
+    <p>
+        调用遍历器iterator的场合:
+        1. 对数组和Set解构进行解构赋值
+        2. 扩展运算符 ... （只要数据解构部署了iterator,就能对其使用扩展运算符转换为数组）
+        3. yield*
+    </p>
+</body>
+</html>
+<script>
+    {
+        let arr = [1,2];
+        let item = arr[Symbol.iterator]();
+        console.log(item.next()); // {value: 1, done: false}
+        console.log(item.next()); // {value: 2, done: false}
+        console.log(item.next()); // {value: undefined, done: false}
+    }
+
+
+    {
+        class RangeIterator {
+            constructor(start, stop) {
+                this.value = start;
+                this.stop = stop;
+            }
+            [Symbol.iterator]() {
+                return this;
+            }
+            next() {
+                var value = this.value;
+                if(value < this.stop) {
+                    this.value ++;
+                    return {
+                        done: false,
+                        value: value,
+                    }
+                }
+                return {
+                    done: true,
+                    value: undefined,
+                }
+            }
+        }
+        function range(start, end) {
+            return new RangeIterator(start, end);
+        }
+        const rangeIterator = new RangeIterator(0, 5); 
+        const item = rangeIterator[Symbol.iterator](); // 返回该对象的实例，与 rangeIterator 相同， 具有next方法
+        console.log(rangeIterator);
+        console.log(item);
+        console.log(item.next());
+        console.log(item.next());
+    }
+
+
+    {
+        // 使用闭包来保存当前指针的位置
+        function Obj(value){
+            this.value = value;
+            this.next = null;
+        }
+        Obj.prototype[Symbol.iterator] = function() {
+            var next = function() {
+                if(current) {
+                    var value = current.value
+                    current = current.next;
+                    return {
+                        done: false,
+                        value: value
+                    }
+                } else {
+                    return {
+                        done: true,
+                    }
+                }
+            }
+            var current = this;
+            var iterator = {
+                next: next,
+            }
+            return iterator;
+        }
+        var one = new Obj(1);
+        var two = new Obj(2);
+        var three = new Obj(3);
+        one.next = two;
+        two.next = three;
+        for(let i of one){
+            console.log(i);
+        }
+    }
+
+
+    {
+        var obj = {
+            0: '123456',
+            2: 'SenSir',
+            1: '灬',
+            length: 3,
+            [Symbol.iterator]: function() {
+                var nowIndex = 0;
+                var that = this;
+                return {
+                    next: function() {
+                        if(nowIndex < that.length) {
+                            var result = {
+                                value: that[nowIndex],
+                                done: false
+                            };
+                            nowIndex ++;
+                            return result;
+                        }
+                        return {
+                            value: undefined,
+                            done: true,
+                        }
+                    }
+                }
+            }
+        }
+        for(let i of obj) {
+            console.log(i);
+        }
+    }
+
+
+    {
+        var obj = {
+            name: 'SenSir',
+            nickName: 'Sen灬Sir',
+            id: '1234',
+        }
+        obj[Symbol.iterator]= function() {
+            var nowIndex = 0;
+            var that = this;
+            var orderArr = Object.keys(this);
+            var length = orderArr.length;
+            return {
+                next: function() {
+                    if (nowIndex < length) {
+                        var key =orderArr[nowIndex];
+                        var result = {
+                            value: that[key],
+                            done: false,
+                        }
+                        nowIndex ++;
+                        return result;
+                    }
+                    return {
+                        done: true,
+                    }
+                }
+            }
+        }
+        for(let i of obj) {
+            console.log(i);
+        }
+    }
+</script>
