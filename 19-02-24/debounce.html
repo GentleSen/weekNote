@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>函数防抖</title>
+</head>
+<body>
+    <input class="input" type="text">
+</body>
+</html>
+<script>
+    var oInput = document.getElementsByClassName('input')[0];
+    var debounce = function(callback, delay) {
+        return function(args) {
+            var _args = args;
+            return new Promise(function(resolve, reject) {
+                try {
+                    var that = this;
+                    if (callback.timer) {
+                        clearTimeout(callback.timer);
+                    }
+                    callback.timer = setTimeout(function(args) {
+                        callback.apply(that, args).then(function(res){
+                            resolve(res);
+                        });
+                    }, delay, args);
+                } catch (err) {
+                    reject(err);
+                }
+            })
+        }
+    };
+    var doAjax = function (arg1, arg2) {
+        console.log('doAjax');
+        return new Promise(function(resolve, reject) {
+            try {
+                setTimeout(function() {
+                    resolve(`ajaxContent, arg1: ${arg1}, arg2: ${arg2}`);
+                }, 1000);
+            } catch(err) {
+                reject(err);
+            }
+        })
+    }
+    var debounceDoAjax = debounce(doAjax, 500);
+    oInput.addEventListener('keyup', function() {
+        // debounce函数的返回函数只含有一个参数args且采用apply的形式调用方法，故此处的参数应该变为数组的形式
+        debounceDoAjax(['Sen', 'Sir']).then(function(data) {
+            console.log(data);
+        });
+    });
+</script>

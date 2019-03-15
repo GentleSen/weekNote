@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <p>修饰器函数，用来修改类的行为</p>
+    <p>修饰器是一个对类进行处理的函数。修饰器函数的第一个参数就是所要修饰的目标类。</p>
+</body>
+</html>
+<script>
+    // 把参数对象的键值对添加对象的静态属性
+    function info(info) {
+        return function(target) {
+            for(let key in info) {
+                target[key] = info[key];
+            }
+        }
+    }
+    @info({
+        name: 'SenSir',
+        id: '123',
+    })
+    class Person {
+        sayName(){
+            console.log(this.name);
+        }
+        sayId() {
+            console.log(this.id);
+        }
+    }
+</script>

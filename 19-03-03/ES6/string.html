@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <p>字符串</p>    
+    <p>
+        1. str.codePointAt(index); 
+            返回str在index下标处的unicode编码，可以正确处理四个字节存储的字符。
+            使用str.length来获取字符串的长度并不准确，使用str.split来把字符串变为数组也并不准确，使用for..in..循环也不准确，最好使用for..of..循环来获取字符串中的对应值。
+        2. String.fromCodePoint(0x20cd7);
+            根据提供的unicode编码返回对应的汉字，可以正确处理32位的字符。
+        3. str.includes(subStr);      当str中含有subStr时返回true，否则返回false
+           str.startsWitdh(subStr);   当str是以subStr开头时返回true，否则返回false，当第二个参数传n时，表示从第n位开始计算
+           str.endsWidth(subStr);     当str是以subStr结尾时返回true，否则返回false，当第二个参数传n时，表示从第n位开始计算
+        4. str.repeat(n); 讲str重复n次并返回，如果传入小数会被向下取整，传入负数以及Infinity会报错，传入字符串以及对象会被转换成数字。
+        5. str.padStart(length, subStr);    在str的头部填充subStr，直至长度为length，如果subStr长度过长则截取subStr，如果过短则重复。若subStr没有传，则使用空字符串补全，若str长度大于length，则返回str
+           str.padEnd(length, subStr);      在str的尾部填充subStr，直至长度为length，如果subStr长度过长则截取subStr，如果过短则重复。若subStr没有传，则使用空字符串补全，若str长度大于length，则返回str
+        
+    </p>
+</body>
+</html>
+<script>
+    {
+        var str = "𠮷a";
+        console.log(str.charCodeAt(0));
+        console.log(str.charCodeAt(1));
+        console.log(str.codePointAt(0));
+        console.log(str.codePointAt(1));
+        console.log(str.codePointAt(2));
+        console.log(str.length, 'length');
+        for (let i of str) {
+            console.log(i.codePointAt(), 'for循环');
+        }
+        for (let i in str) {
+            console.log(i.codePointAt(), 'for in');
+        }
+        console.log(str.split(''));
+    }
+    
+
+    {
+        console.log(String.fromCodePoint(0x24242), 'fromCodePoint');   // 𤉂 fromCodePoint
+        console.log(String.fromCharCode(0x24242), 'fromCharCode');     // 䉂 fromCharCode
+        // 返回的结果不一样，应该以fromCodePoint()为准
+        console.log(String.fromCodePoint(0x2424), 'fromCodePoint');   // ␤ fromCodePoint
+        console.log(String.fromCharCode(0x2424), 'fromCharCode');     // ␤ fromCharCode
+        // 返回的结果一致，说明因为0x2424 小于 0xFFFF
+    }
+    
+
+
+    {
+        let str = 'Sen灬Sir';
+        console.log(str.includes('灬')); // true 
+        console.log(str.startsWith('灬')); // false
+        console.log(str.startsWith('S')); // true
+        console.log(str.endsWith('灬')); // false
+        console.log(str.endsWith('R')); // false
+    }
+
+
+    {
+        let str = 'SenSir';
+        console.log(str.repeat(2)); // SenSirSenSir
+        console.log(str.repeat(1.3)); // SenSir
+        console.log(str.repeat(1.7)); // SenSir
+        console.log(str.repeat('ha')); // 
+        console.log(str.repeat('2')); // SenSirSenSir
+        console.log(str.repeat({ // SenSirSenSir
+            valueOf: () => {
+                return 2;
+            }
+        }));
+    }
+
+
+
+    {
+        let str = 'SenSir';
+        console.log(str.padStart(9, '6')); // 666SenSir
+        console.log(str.padStart(3, '6')); // SenSir
+        console.log(str.padStart(9, '123456789')); // 123SenSir
+        console.log(str.padEnd(9, '6')); // SenSir666
+    }
+
+
+    {
+        // ES5 字符串方法
+        console.log('hesen'.charAt(2)); // 显示在指定位置的字符                                       s
+        console.log('hesen'.charCodeAt(2)); // 显示在执行位置的Unicode编码                            115
+        console.log('he'.concat('sen')); // 连接字符串                                              'hesen'
+        console.log('hesen'.indexOf('e')); // 检索字符串                                            1
+        console.log('hesen'.lastIndexOf('e')); // 从后方检索字符串                                   3
+        console.log('hesen'.slice(1, 3)); // 提取字符串片段，返回被提取的部分                          'es'
+        console.log('hesen'.slice(-3, -1)); // 提取字符串片段，如果参数为负数，则从尾部开始算            'se'
+        console.log('hesen'.split('')); // 将字符串转换为数组                                         ['h','e','s','e','n']
+        console.log('hesen'.substr(2, 3)); // 从起始索引号提取字符串中指定数目的字符                    'sen'
+        console.log('hesen'.substring(2, 3)); // 提取两个索引之间的字符串                             's'
+        console.log('heSen'.toLowerCase()); // 将字符串转换为小写                                     'hesen' 
+        console.log('hesen'.toUpperCase()); // 将字符串转换为大写                                      'HESEN'
+    }
+</script>
