@@ -15,7 +15,6 @@ var getName = (function () {
     return function () {
         return name;
     }
-    name = null;                            // 使用闭包会出现内存泄漏,应该在使用完之后及时清理
 })();
 console.log(name);                          // 返回空值,不会报错是因为在下面的语句中用var创建了name,变量提升故不会报错。
 var name_1 = getName();                       
@@ -33,7 +32,6 @@ var getObj = (function () {
     return function () {
         return obj;
     }
-    obj = null;
 })()
 console.log(obj);                           // Err: obj is not defined; 因为在下文中并没有创建obj,不存在变量提升,也没有声明变量,故报错。
 var obj_1 = getObj();
@@ -54,21 +52,20 @@ console.log(obj_2);                         // { name: 'hesen', id: '950828', se
  */
 var arr = [];
 for (var i = 0 ; i < 5 ; i++) {
-    (function(){
-        setInterval(function() {                        
+    (function(i){
+        setTimeout(function() {                        
             arr[i] = i;
         }, 0);       
-    })();
+    })(i);
 }                                       
 
 var arr = [];
 for ( var i = 0 ; i < 5; i++ ) {
-    setInterval((function() {
+    setInterval((function(i) {
         return function () {
             arr[i] = i;
         }
-        i = null;
-    })(), 0);
+    })(i), 0);
 }
 
 /**
@@ -77,7 +74,9 @@ for ( var i = 0 ; i < 5; i++ ) {
 var arr = [];
 for (var i = 0 ; i < 5 ; i++) {
     setInterval(function(i) {
-        arr[i] = i;
+        arr[i] = function() {
+            return i;
+        };
     }, 0, i);
 }
 
@@ -114,7 +113,6 @@ var add = (function () {
     return function () {
         return ++i;
     }
-    i = null;
 })();
 console.log(add());                             // 1
 console.log(add());                             // 2

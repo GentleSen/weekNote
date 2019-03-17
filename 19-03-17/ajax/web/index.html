@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <span>123</span>
+</body>
+</html>
+<script src="./ajax.js"></script>
+<script>
+    ajax({
+        url: '/getAjax',
+        method: 'get',
+        timeout: 10000,
+        dataType: 'json',
+        data: {
+            name: 'hesen',
+            id:'123'
+        },
+        success: function(data) {
+            console.log(data);
+        },
+        error: function(err) {
+            console.log(err);
+        }
+    });
+    ajax({
+        url: '/postAjax',
+        method: 'POST',
+        timeout: 10000,
+        dataType: 'json',
+        data: {
+            name: 'hesen',
+            id:' 123'
+        },
+        success: function(data) {
+            console.log(data);
+        },
+        error: function(err) {
+            console.log(err);
+        }
+    });
+</script>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <p>子类的__proto__属性表示构造函数的继承，总是指向父类</p>
+    <p>子类prototype属性的__proto__属性，表示方法的继承，总是指向父类的prototype属性</p>
+    <p>这两条继承链，可以这样理解：作为一个对象，子类的__proto是父类；作为一个构造函数，子类prototype是父类的rototype属性的实例。</p>
+    <p>Object.setPrototypeOf() 方法设置一个指定的对象的__proto__到另一个对象或  null</p>
+</body>
+</html>
+<script>
+    console.log('================================prototype && __proto__============================================');
+    class Animal {
+        constructor() {
+            this.animalName = 'Animal';
+        }
+        sayAnimalName() {
+            console.log(this.animalName);
+        }
+    }
+    const animal = new Animal();
+    console.log(animal.__proto__ === Animal.prototype);  // true
+    console.log(animal.__proto__.constructor === Animal);  // true
+    class Dog extends Animal {
+        constructor() {
+            this.dogName = 'dogName';
+        }
+        sayDogName() {
+            console.log(this.dogName);
+        }
+    }
+    // 可以对比ES5实现类来理解
+    console.log(Dog.__proto__ === Animal, 'Dog.__proto__');  // 等于Animal本身      
+    console.log(Dog.prototype, 'Dog.prototype');  // 等于Animal的实例    Dog.prototype = new TempFun();
+    console.log(Animal.prototype, 'Animal.prototype');  // 等于Dog.prototype.__proto__
+    console.log(Animal.__proto__, 'Animal.__proto__');  // 等于Function.prototype
+
+
+
+    console.log('=======================================类继承的实现==============================================');
+    class A {};
+    class B {};
+    Object.setPrototypeOf(B.prototype, A.prototype);
+    Object.setPrototypeOf(B, A);
+    console.log(B.__proto__ === A);
+    console.log(B.prototype.__proto__ === A.prototype);
+
+
+
+    console.log('===============================Object.setPrototypeOf 的实现=========================================');
+    Object.setPrototypeOf = function(obj, proto) {
+        obj.__proto__ = proto;
+        return obj;
+    }
+
+
+
+
+    // 普通构造函数的继承
+    class MyArr extends Array{};
+    const myArr = new MyArr();
+    myArr.push('hesen');
+    console.log(myArr.length); // 1
+    console.log(myArr[0]); // hesen
+</script>

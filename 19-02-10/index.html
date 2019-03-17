@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>发布订阅者模式</title>
+</head>
+<body>
+    
+</body>
+</html>
+<script>
+    class Public {
+        subscribers = {
+            any: [],
+        };
+        addSubscriber(type, handler) {
+            type = type || 'any';
+            if(!this.subscribers[type]) {
+                this.subscribers[type] = [];
+            }
+            let hash = Math.floor(Math.random() * 1000000); 
+            this.subscribers[type].push({
+                hash,
+                handler,
+            });
+            return hash;
+        };
+        deliver(type, arg) {
+            this.subscribers[type].forEach((item, index)=> {
+                item.handler.apply(this, arg);
+            });
+        };
+        delete(type, hash) {
+            if(this.subscribers[type]) {
+                this.subscribers[type] = this.subscribers[type].filter((item, index, arr)=>{
+                    return item.hash !== hash;
+                })
+            }
+        };
+    };
+    const publisher = new Public();
+    const fun = (arg1, arg2)=> {
+        console.log(`arg1: ${arg1}, arg2: ${arg2}`, 'fun');
+    };
+    const hash1 = publisher.addSubscriber('typeA', fun)
+    const hash2 = publisher.addSubscriber('typeB', fun);
+    publisher.deliver('typeA', ['typeA', '49']);
+    publisher.deliver('typeB', ['typeB', '50']);
+    publisher.delete('typeA', hash1);
+    publisher.deliver('typeA', ['typeA', '52']);
+    publisher.deliver('typeB', ['typeB', '53']);
+</script>
