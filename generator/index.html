@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>generator</title>
+</head>
+<body>
+    <p>使用 generator 函数给原生的对象加上 Iterator 遍历器</p>
+    <p>generator 函数生成的是链表，无法随机读取,只能顺序读取</p>
+    <p>如果数组中存储的不是同一类型的元素,则js会使用哈希映射的方式去存储,也是只能顺序读取</p>
+</body>
+</html>
+<script>
+    {
+        const tempJson = {
+            name: 'sensir',
+            id: '123456',
+        };
+        const getLinkedList = function * (tempJson) {
+            for(let key in tempJson) {
+                yield [key, tempJson[key]]
+            }
+        }
+        const linkedList = getLinkedList(tempJson);
+        for(let [key, value] of linkedList) {
+            console.log(key, value);
+        }
+    }
+    {
+        const tempArr = [0,1,2,3,4,5,6,7,8,9];
+        const getLinkedList = function * (tempArr) {
+            for(let key in tempArr) {
+                yield key;
+            }
+        }
+        const linkedList = getLinkedList(tempArr);
+        console.log(linkedList[1]); // 不会报错, 输出undefined
+    }
+    {
+        
+    }
+</script>

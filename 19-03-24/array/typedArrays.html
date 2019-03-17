@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>typedArray</title>
+</head>
+<body>
+    <p>javascript 类型化数组是一种类似于数组的对象，提供了一种访问原始二进制数据的机制</p>
+    <p>类型化数组跟普通的数组不同,在调用Array.isArray时,类型化数组会返回false。并且并不是数组的所有方法类型化数组都可以使用。</p>
+    <p>javascript使用缓冲跟视图两部分来实现类型化数组。缓冲描述的是一个内存块,由ArrayBuffer实现。缓冲没有格式可言,且不提供方法访问其内容。</p>
+    <p>视图上提供上下文(数据类型,起始偏移量以及元素数)将数据转换为实际有类型的数组。</p>
+    <p>个人理解: 缓冲就是底层的实现,而视图提供了一些方法供开发者使用,通过视图来操作缓冲区的数据。</p>
+    <p>Arraybuffer: 用来表示通用的固定长度的原始二进制数据缓冲区。不能直接操作ArrayBuffer中的内容,需要创建一个视图来操作ArrayBuffer中的数据</p>
+    <p>操作ArrayBuffer可以使用类型数组视图,也可以使用dataView(数据视图)</p>
+    <p>类型数组视图: 具有自描述性的名字和所有常用的数值类型。(自描述性的名字？)如: Int8Array,Uint8Array等...Uint8ClampedArray用来操作0-255之间的数值,canvas数据处理经常会用。</p>
+    <p>dataView 是一种底层接口,提供操作内存区任意数据的接口,用于操作不同类型的数据</p>
+</body>
+</html>
+<script>
+    const buffer1 = new ArrayBuffer(1); // 单位为字节,表示创建一个1字节的内存区,即8位的内存区。
+    console.log(buffer1.byteLength); // 输出字节长度
+    const int8Array = new Int8Array(buffer1);  // 创建长度为一的二进制补码8位的有序号整数的数组, 默认填充 0.
+    console.log(int8Array); // Int8Array [0]
+    int8Array[0] = 127;
+    console.log(int8Array); // Int8Array [127]
+    /**
+     * 二进制补码8位有序号: 即有一位用来表示符号位,剩下7位表示数值。
+     * 7位表示数值最大, 原码应该为 1111111, 补码为 0000000。
+     * 1111111: 转化为10进制为127;加上一位符号位,故表示范围为 -127 ~ 127;
+     */
+
+    const buffer2 = new ArrayBuffer(2); // 创建2字节内存区
+    const int16Array = new Int16Array(buffer2); // 创建长度为一的二进制补码16位的有序号整数的数组。
+    console.log(int16Array); // Int16Array [0]   范围 -pow(2, 15) ~ (pow(2, 15) - 1), 原因同上
+
+    const buffer4 = new ArrayBuffer(4);
+    const int32Array = new Int32Array(buffer4);
+    console.log(int32Array); // Int32Array [0]  范围 -pow(2, 31) ~ (pow(2, 31) - 1)
+
+    // arrayBuffer的方法：
+    {
+        const buffer4 = new ArrayBuffer(4);
+        const int32Array = new Int32Array();
+        console.log(ArrayBuffer.isView(int32Array)); // true, 如果参数是视图实例,返回true,否则返回false
+        // ArrayBuffer.transfer(buffer4, 8);  尴尬,谷歌浏览器并不支持...
+    }
+</script>
+
